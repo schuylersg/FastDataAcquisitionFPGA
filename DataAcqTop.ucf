@@ -1,0 +1,189 @@
+############################################################################
+# VCC AUX VOLTAGE 
+############################################################################
+CONFIG VCCAUX=3.3;
+
+############################################################################
+# ADC Control Pins 
+############################################################################
+NET "ADC_CAL" 			LOC = P32 	| 	IOSTANDARD = LVCMOS18;
+NET "ADC_PD" 			LOC = P33 	| 	IOSTANDARD = LVCMOS18;
+NET "ADC_CALRUN" 		LOC = P34 	| 	IOSTANDARD = LVCMOS18;
+NET "ADC_SDATA" 		LOC = P75 	| 	IOSTANDARD = LVCMOS18;
+NET "ADC_SCLK" 		LOC = P78 	| 	IOSTANDARD = LVCMOS18;
+NET "ADC_SCS" 			LOC = P79 	| 	IOSTANDARD = LVCMOS18;
+NET "ADC_PDQ" 			LOC = 143 	|	IOSTANDARD = LVCMOS18;
+
+############################################################################
+# Non-ADC IO Pins 
+############################################################################
+NET "USB_RS232_TXD" 	LOC = P40 	| 	IOSTANDARD = LVCMOS33;
+NET "USB_RS232_RXD" 	LOC = P41 	| 	IOSTANDARD = LVCMOS33;
+NET "FPGA_SCL" 		LOC = P43 	| 	IOSTANDARD = LVCMOS33;
+NET "FPGA_SDL" 		LOC = P44 	| 	IOSTANDARD = LVCMOS33;
+NET "DATA_TRIGGER_N" LOC = P50 	| 	IOSTANDARD = LVDS33;
+NET "DATA_TRIGGER_P" LOC = P51 	| 	IOSTANDARD = LVDS33;
+
+############################################################################
+# Clock Pins 
+############################################################################
+NET "ADC_CLK_P" 		LOC = P126 	|	IOSTANDARD = LVDS25 		| 	TNM_NET = "ADC_CLK_P";
+TIMESPEC TS_ADC_CLK_P = PERIOD "ADC_CLK_P" 250 MHz HIGH 50%;
+
+NET "ADC_CLK_N" 		LOC = P127 	| 	IOSTANDARD = LVDS25		|	TNM_NET = "ADC_CLK_N";
+TIMESPEC TS_ADC_CLK_N = PERIOD "ADC_CLK_N" 250 MHz HIGH 50%;
+
+NET "USER_CLK" 		LOC = P55 	| 	IOSTANDARD = LVCMOS33	| 	TNM_NET = "USER_CLK";
+TIMESPEC TS_USER_CLK = PERIOD "USER_CLK" 100 MHz HIGH 50 %;
+
+#Second backup clock not populated
+#NET "USER_CLK2" LOC = P56 | IOSTANDARD = LVCMOS33 | TNM_NET = "USER_CLK2"; 
+#TIMESPEC TS_USER_CLK2 = PERIOD "USER_CLK2" 100 MHz HIGH 50 %;
+
+############################################################################
+# Prohibited Programming Pins 
+############################################################################
+CONFIG PROHIBIT = P38;			#"CSO"
+CONFIG PROHIBIT = P39;			#"INIT_B"
+CONFIG PROHIBIT = P60;			#"M1"
+CONFIG PROHIBIT = P65;			#"DIN
+CONFIG PROHIBIT = P66;			#"MOSI"
+CONFIG PROHIBIT = P69;			#"M0"
+CONFIG PROHIBIT = P70;			#"CCLK"
+CONFIG PROHIBIT = P74;			#"DOUT"
+CONFIG PROHIBIT = P144;			#"HSWAPEN"
+
+############################################################################
+# ADC Data Pins
+############################################################################
+NET "ADC_DATA_P[15]" 	LOC = P131;
+NET "ADC_DATA_N[15]"		LOC = P132;
+NET "ADC_DATA_P[14]" 	LOC = P133;
+NET "ADC_DATA_N[14]" 	LOC = P134;
+NET "ADC_DATA_P[13]" 	LOC = P137;
+NET "ADC_DATA_N[13]" 	LOC = P138;
+NET "ADC_DATA_P[12]" 	LOC = P139;
+NET "ADC_DATA_N[12]" 	LOC = P140;
+NET "ADC_DATA_P[11]" 	LOC = P141;
+NET "ADC_DATA_N[11]" 	LOC = P142;
+NET "ADC_DATA_P[10]" 	LOC = P1;
+NET "ADC_DATA_N[10]" 	LOC = P2;
+NET "ADC_DATA_P[9]" 		LOC = P5;
+NET "ADC_DATA_N[9]" 		LOC = P6;
+NET "ADC_DATA_P[8]" 		LOC = P7;
+NET "ADC_DATA_N[8]" 		LOC = P8;
+NET "ADC_DATA_P[7]" 		LOC = P9;
+NET "ADC_DATA_N[7]" 		LOC = P10;
+NET "ADC_DATA_P[6]" 		LOC = P11;
+NET "ADC_DATA_N[6]" 		LOC = P12;
+NET "ADC_DATA_P[5]" 		LOC = P14;
+NET "ADC_DATA_N[5]" 		LOC = P15;
+NET "ADC_DATA_P[4]" 		LOC = P16;
+NET "ADC_DATA_N[4]" 		LOC = P17;
+NET "ADC_DATA_P[3]" 		LOC = P21;
+NET "ADC_DATA_N[3]" 		LOC = P22;
+NET "ADC_DATA_P[2]" 		LOC = P23;
+NET "ADC_DATA_N[2]" 		LOC = P24;
+NET "ADC_DATA_P[1]" 		LOC = P26;
+NET "ADC_DATA_N[1]" 		LOC = P27;
+NET "ADC_DATA_P[0]" 		LOC = P29;
+NET "ADC_DATA_N[0]" 		LOC = P30;
+NET "ADC_DATA_P[31]" 	LOC = P124;
+NET "ADC_DATA_N[31]" 	LOC = P123;
+NET "ADC_DATA_P[30]" 	LOC = P121;
+NET "ADC_DATA_N[30]" 	LOC = P120;
+NET "ADC_DATA_P[29]" 	LOC = P119;
+NET "ADC_DATA_N[29]" 	LOC = P118;
+NET "ADC_DATA_P[28]" 	LOC = P117;
+NET "ADC_DATA_N[28]" 	LOC = P116;
+NET "ADC_DATA_P[27]" 	LOC = P115;
+NET "ADC_DATA_N[27]" 	LOC = P114;
+NET "ADC_DATA_P[26]" 	LOC = P112;
+NET "ADC_DATA_N[26]" 	LOC = P111;
+NET "ADC_DATA_P[25]" 	LOC = P105;
+NET "ADC_DATA_N[25]" 	LOC = P104;
+NET "ADC_DATA_P[24]" 	LOC = P102;
+NET "ADC_DATA_N[24]" 	LOC = P101;
+NET "ADC_DATA_P[23]" 	LOC = P100;
+NET "ADC_DATA_N[23]" 	LOC = P99;
+NET "ADC_DATA_P[22]" 	LOC = P98;
+NET "ADC_DATA_N[22]" 	LOC = P97;
+NET "ADC_DATA_P[21]" 	LOC = P95;
+NET "ADC_DATA_N[21]" 	LOC = P94;
+NET "ADC_DATA_P[20]" 	LOC = P93;
+NET "ADC_DATA_N[20]" 	LOC = P92;
+NET "ADC_DATA_P[19]" 	LOC = P88;
+NET "ADC_DATA_N[19]" 	LOC = P87;
+NET "ADC_DATA_P[18]" 	LOC = P85;
+NET "ADC_DATA_N[18]" 	LOC = P84;
+NET "ADC_DATA_P[17]" 	LOC = P83;
+NET "ADC_DATA_N[17]" 	LOC = P82;
+NET "ADC_DATA_P[16]" 	LOC = P81;
+NET "ADC_DATA_N[16]" 	LOC = P80;
+
+#Created by Constraints Editor (xc6slx9-tqg144-3) - 2013/07/24
+INST "ADC_DATA_P<0>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<1>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<2>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<3>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<4>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<5>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<6>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<7>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<8>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<9>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<10>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<11>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<12>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<13>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<14>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<15>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<16>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<17>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<18>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<19>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<20>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<21>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<22>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<23>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<24>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<25>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<26>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<27>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<28>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<29>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<30>" TNM = TG_adc_data_p;
+INST "ADC_DATA_P<31>" TNM = TG_adc_data_p;
+#Created by Constraints Editor (xc6slx9-tqg144-3) - 2013/07/24
+INST "ADC_DATA_N<0>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<1>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<2>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<3>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<4>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<5>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<6>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<7>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<8>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<9>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<10>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<11>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<12>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<13>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<14>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<15>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<16>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<17>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<18>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<19>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<20>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<21>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<22>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<23>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<24>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<25>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<26>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<27>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<28>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<29>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<30>" TNM = TG_adc_data_n;
+INST "ADC_DATA_N<31>" TNM = TG_adc_data_n;
