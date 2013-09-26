@@ -23,10 +23,13 @@ module AsyncTrigger(
 	input wire Trigger,
 	input wire Clock,
 	input wire Reset,
-	output reg EnableRecording
+	output EnableRecordingOut
     );
 
-reg NextState;
+reg EnableRecording = 1'b0;
+reg NextState = 1'b0;
+
+assign EnableRecordingOut = EnableRecording;
 
 always@(posedge Clock)begin
 	if(Reset) EnableRecording <= 1'b0;

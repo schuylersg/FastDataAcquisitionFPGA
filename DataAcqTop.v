@@ -46,21 +46,29 @@ module DataAcqTop(
 //--------------------------------------------------------------------------
 //Clock Management and Reset Logic
 //--------------------------------------------------------------------------
-wire SoftReset = 1'b0;
 wire Clk100Mhz, ClkADC2DCM, ClkADCData0p, ClkADCData30p;
-wire DCM1Locked, DCM2Locked, DCMsLocked;
-
+wire InputTrigger;
 assign Clk100Mhz = USER_CLK;
 
 
 // Create the ADC input clock buffer and send the signal to the DCM
 IBUFGDS #(
       .DIFF_TERM("TRUE"), 		// Differential Termination
-      .IOSTANDARD("LVDS_25") 	// Specifies the I/O standard for this buffer
-   ) IBUFGDS_inst (
+      .IOSTANDARD("LVDS_33") 	// Specifies the I/O standard for this buffer
+   ) IBUFGDS_adcClock (
       .O(ClkADC2DCM),  			// Clock buffer output
       .I(ADC_CLK_P),  			// Diff_p clock buffer input
       .IB(ADC_CLK_N) 			// Diff_n clock buffer input
+   );
+	
+	// Create the ADC input clock buffer and send the signal to the DCM
+IBUFDS #(
+      .DIFF_TERM("TRUE"), 		// Differential Termination
+      .IOSTANDARD("LVDS_33") 	// Specifies the I/O standard for this buffer
+   ) IBUFDS_trigger (
+      .O(InputTrigger),  				// Clock buffer output
+      .I(DATA_TRIGGER_P),  			// Diff_p clock buffer input
+      .IB(DATA_TRIGGER_N) 				// Diff_n clock buffer input
    );
 
 // Use the DCM to buffer the clock and create phase shifted versions to account for PCB delay
@@ -71,20 +79,8 @@ DCM1 adc_dclk_dcm
     .CLK_OUT0P(ClkADCData0p),     	// OUT
     .CLK_OUT_30P(ClkADCData30p),    // OUT
     // Status and control signals
-    .RESET(SoftReset),					// IN
+    .RESET(1'b0),					// IN
     .LOCKED(DCM1Locked));
-
-assign DCMsLocked = 1'b1; //DCM1Locked & DCM2Locked;	//allows for modules to wait for all clocks to be locked and ready
-wire ModuleReset;	//Use this to reset all non-clock modules without resetting the DCMs
-wire FastReset = 1'b0;
-
-//reg [1:0] LockedShiftReg;
-//always@(posedge Clk100Mhz) begin
-//	if(USER_RESET) LockedShiftReg[1:0] <= 2'b00;
-//	else LockedShiftReg[1:0] <= {LockedShiftReg[0], DCMsLocked};
-//end
-
-assign ModuleReset = USER_RESET | ((~LockedShiftReg[1]) & LockedShiftReg[0]);
 
 //------------------------------------------------------------------------------
 // UART and device settings/state machines 
@@ -93,7 +89,7 @@ wire [7:0] DataRxD;
 wire [7:0] FIFODataOut;
 wire [7:0] OtherDataOut;
 wire DataAvailable, ClearData;
-wire FIFORequestToSend, OtherRequestToSend, FIFOLatchData, OtherLatchData, FIFOReadyToSend, OtherReadyToSend;
+wire FIFORequestToSend, OtherRequestToSend, FIFODataReceived, OtherDataReceived;
 wire ArmTrigger, TriggerReset, EchoChar;
 
 RxDWrapper RxD (
@@ -104,20 +100,16 @@ RxDWrapper RxD (
     .DataAvailable(DataAvailable)
     );
 
+assign ClearData = DataAvailable; //Temporary - automatically erases available data
+
 TxDWrapper TxD (
     .Clock(Clk100Mhz), 
-    .Reset(SoftReset), 
+    .Reset(1'b0), 
     .Data({FIFODataOut, OtherDataOut}), 
-    .RequestToSend({FIFORequestToSend, OtherRequestToSend}), 
-    .LatchData({FIFOLatchData, OtherLatchData}), 
-    .ReadyToSend({FIFOReadyToSend, OtherReadyToSend}), 
+    .RequestToSend({FIFORequestToSend, OtherRequestToSend}),
+	 .DataReceivedOut({FIFODataReceived, OtherDataReceived}), 
     .SDO(USB_RS232_TXD)
     );
-
-assign OtherRequestToSend = (EchoChar & DataAvailable);
-assign OtherLatchData = (OtherRequestToSend & OtherReadyToSend);
-assign ClearData = OtherLatchData;
-assign OtherDataOut = DataRxD;
 
 TriggerFSM TriggerSetting (
     .Clock(Clk100Mhz), 
@@ -128,7 +120,7 @@ TriggerFSM TriggerSetting (
 
 EchoCharFSM EchoSetting (
     .Clock(Clk100Mhz), 
-    .Reset(SoftReset), 
+    .Reset(1'b0), 
     .Cmd(DataRxD), 
     .EchoChar(EchoChar)
     );
@@ -143,9 +135,8 @@ ADC_IO ADCConnection (
     .DataInN(ADC_DATA_N),
 	 .ClockIn(ClkADCData0p),
 	 .ClockInDelayed(ClkADCData30p),	 
-    .DataOut(FIFODataIn),
+    .DataOut(FIFODataIn)
     );
-
 	 
 //------------------------------------------------------------------------------
 //ADC Control
@@ -153,28 +144,30 @@ ADC_IO ADCConnection (
 	
 	assign ADC_SCLK = 1'b0;
 	assign ADC_SDATA = 1'b0;
-	assign ADC_POWER_DOWN = 1'b0;
-	assign ADC_RUN_CALIB = 1'b0;
+	assign ADC_PD = 1'b0;
+	assign ADC_CAL = 1'b0;
 	assign ADC_SCS = 1'b0;
-	assign ADC_EXTENDED_CONTROL = 1'bz;
 	
-	reg CalStatus;
+	reg CalStatus = 1'b0;
 	
-	always@(posedge ClkADCData)
-		CalStatus <= ADC_CALIB;
+	always@(posedge ClkADCData0p)
+		CalStatus <= ADC_CALRUN;
 	
 
 //------------------------------------------------------------------------------
 //FIFO and FIFO Start Trigger
 //------------------------------------------------------------------------------
 wire EnableRun, Trigger;
-AsyncTrigger DataTrigger (
-	 .Clock(ClkADCData),
+/*AsyncTrigger DataTrigger (
+	 .Clock(ClkADCData0p),
     .Armed(ArmTrigger && CalStatus), 
-    .Trigger(DATA_TRIGGER), 
+    .Trigger(InputTrigger), 
     .Reset(TriggerReset), 
-    .EnableRecording(EnableRecording)
+    .EnableRecordingOut(EnableRecording)
     );
+*/
+
+assign EnableRecording = 1'b1;
 
 wire FIFOFull0, FIFOFull1, FIFOFull2;
 wire FIFOEmpty0, FIFOEmpty1, FIFOEmpty2;
@@ -233,21 +226,15 @@ DataTxMux DataMux (
     .ReadyToRead(MuxReadyToRead), 
     .DataOut(FIFODataOut), 			//Data out to UART Tx
     .Clk(Clk100Mhz), 					//fpga clock
-    .Reset(ModuleReset), 
-    .FIFOData({FIFODataOut1[10:5], FIFODataOut2, FIFODataOut1[4:0], FIFODataOut0}), 
+    .Reset(1'b0), 
+    .FIFOData({FIFODataOut1[10:5], FIFODataOut2[9:0], FIFODataOut1[4:0], FIFODataOut0[10:0]}), 
     .FIFODataValid(AllDataValid), 		
-    .UARTDataLoaded(UARTDataLoaded)
+    .UARTDataLoaded(FIFODataReceived)
     );
 
 
 //Reset the trigger on 1) a User reset or 2) if the FIFO is full 
-wire FIFOFull = FIFOFull3 | FIFOFull2 | FIFOFull1 | FIFOFull0;
-assign TriggerReset = ModuleReset | FIFOFull;
-
-//Read from the FIFO and transmit over UART whenever data is available and UART isn't busy
-//assign FIFORequestToSend = ~(FIFOEmpty0 & FIFOEmpty1 & FIFOEmpty2 & FIFOEmpty3);	//Request to send data whenever the FIFO isn't empty
-//assign FIFORdEn = FIFORequestToSend & FIFOReadyToSend;
-//assign FIFOLatchData = FIFORdEn;
-
+wire FIFOFull = FIFOFull2 | FIFOFull1 | FIFOFull0;
+assign TriggerReset = FIFOFull;
 
 endmodule

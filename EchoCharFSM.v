@@ -28,8 +28,8 @@ module EchoCharFSM(
 localparam ECHO_ON = 1'b0,
 			  ECHO_OFF = 1'b1;
 	
-reg CurrentState;
-reg NextState;
+reg CurrentState = ECHO_ON;
+reg NextState = ECHO_ON;
 
 assign EchoChar = (CurrentState == ECHO_ON);
 

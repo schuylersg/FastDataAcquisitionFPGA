@@ -27,8 +27,8 @@ module TriggerFSM(
 localparam TRIGGER_NOT_ARMED = 1'b0,
 			  TRIGGER_ARMED = 1'b1;
 	
-reg CurrentState;
-reg NextState;
+reg CurrentState = TRIGGER_NOT_ARMED;
+reg NextState = TRIGGER_NOT_ARMED;
 
 //uncomment for real 
 assign TriggerArmed = (CurrentState == TRIGGER_ARMED);

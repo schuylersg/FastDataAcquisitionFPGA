@@ -23,7 +23,7 @@ module TxDWrapper(
 	input Reset,
 	input [15:0] Data,
 	input [1:0] RequestToSend,
-	output reg [1:0] DataReceived,
+	output [1:0] DataReceivedOut,
 	output SDO
     );
 
@@ -31,9 +31,14 @@ localparam 	STATE_Idle = 				2'b00,
 				STATE_Wait = 2'b01,
 				STATE_TxDStart = 2'b010;
 
-reg [1:0] CurrentState, NextState;
-reg [7:0] TxDBuffer, NewTxDValue;
-reg [1:0] DRNext;
+reg [1:0] CurrentState = STATE_Idle;
+reg [1:0] NextState = STATE_Idle;
+reg [7:0] TxDBuffer = 8'b0;
+reg [7:0] NewTxDValue = 8'b0;
+reg [1:0] DataReceived = 2'b0;
+reg [1:0] DRNext = 2'b0;
+
+assign DataReceivedOut = DataReceived;
 
 //--------------------------------------------
 //Synchronous State Transition
@@ -43,7 +48,8 @@ always@(posedge Clock) begin
 		CurrentState <= STATE_Idle;
 		TxDBuffer <= 8'b0;
 		DataReceived <= 2'b0;
-	end else begin
+		end 
+	else begin
 		CurrentState <= NextState;
 		TxDBuffer <= NewTxDValue;
 		DataReceived <= DRNext;

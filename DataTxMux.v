@@ -33,9 +33,12 @@ localparam IDLE 	= 1'b0,
 			  TRANSMIT 	= 1'b1;
 			  
 			  	  
-reg CurrentState, NextState;
-reg [31:0] DataReg, DataNext;
-reg [1:0] DataCounter, DCNext;
+reg CurrentState = IDLE;
+reg NextState = IDLE;
+reg [31:0] DataReg = 32'b0;
+reg [31:0] DataNext = 32'b0;
+reg [1:0] DataCounter = 2'b0;
+reg [1:0] DCNext = 2'b0;
 
 //--------------------------------------------
 //Output logic
@@ -43,7 +46,7 @@ reg [1:0] DataCounter, DCNext;
 assign UARTRequestToSend = (CurrentState == TRANSMIT);
 assign ReadyToRead = (CurrentState == IDLE);
 
-assign DataOut[7:0] =  FIFOData [31:24];
+assign DataOut[7:0] =  DataReg [31:24];
 
 //--------------------------------------------
 //Synchronous State Transition
@@ -62,7 +65,6 @@ always@(posedge Clk) begin
 			DataCounter <= DCNext;
 		end
 end
-
 
 //------------------------------------------
 //Conditional State Transition

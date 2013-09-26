@@ -35,8 +35,6 @@ async_receiver rxd (
     .RxD(SDI), 
     .RxD_data_ready(RxD_data_ready), 
     .RxD_data(RxD_data) 
-//    .RxD_idle(RxD_idle), 
-//    .RxD_endofpacket(RxD_endofpacket)
     );
 
 

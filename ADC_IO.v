@@ -40,7 +40,7 @@ generate for (pin_count = 0; pin_count < 32; pin_count = pin_count + 1) begin: p
     // Instantiate a buffer for every bit of the data bus
     IBUFDS
       #(.DIFF_TERM  ("TRUE"),             // Differential termination
-        .IOSTANDARD ("LVDS_25"))
+        .IOSTANDARD ("LVDS_33"))
      ibufds_inst
        (.I          (DataInP  [pin_count]),
         .IB         (DataInN  [pin_count]),
